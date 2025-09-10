@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>MESeger</title> <link rel="stylesheet" href="CSS/wrapper.css">  <link rel="stylesheet" href="CSS/header.css">
+    <link rel="stylesheet" href="CSS/switcher.css"> <link rel="stylesheet" href="CSS/style.css"> 
+<link rel="preconnect" href="https://fonts.googleapis.com"> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="logo">MESeger</div>
+            <nav class="nav-menu">
+                <a href="#about-project">Главная</a>
+                <a href="#developers">Разработчики</a>
+            </nav>
+            <button class="btn-login">Регистрация</button>
+        </div>
+    </header>
+    <section id = "about-project" style = "display:none;">
+        <p>
+        MESeger — это инновационный мессенджер, созданный для эффективного и безопасного общения. Наша миссия — сделать коммуникации простыми и удобными для всех пользователей. Мы разработали уникальные функции, которые позволяют не только быстро общаться, но и обеспечивают высокий уровень защиты данных.
+
+        Проект стартовал в начале 2025 года и с тех пор постоянно развивается, учитывая потребности и отзывы пользователей. Мы стремимся создать сообщество, где каждый сможет найти поддержку и удобные инструменты для общения.
+
+        Присоединяйтесь к MESeger и откройте для себя новый уровень коммуникаций!
+        </p>
+    </section>
+    <section id="developers" style="display:none;">
+        <h2>Разработчики</h2>
+        <p>Информация о команде разработчиков...</p>
+    </section>
+    <div class = "input-wrapper">
+        <input id = "name" type = "text" class = "name-input" placeholder = " " /> <label for = "name">Введите логин</label>
+    </div>
+    <div class="password-wrapper">
+        <input id="password" type = "password" placeholder = " " autocomplete = "off" class = "password-input" />
+        <label for="password" class = "floating-label">Введите пароль</label>
+        <span class = "error-message"></span>
+        <button type="button" class = "toggle-password" aria-label = "Показать пароль">
+            <svg xmlns="http://www.w3.org/2000/svg" width = "24" height="24" fill="none" stroke="#777" stroke-width = "2" stroke-linecap="round" stroke-linejoin = "round" class="eye-icon" viewBox = "0 0 24 24">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/> <circle cx="12" cy="12" r="3"/>
+            </svg>
+        </button>
+    </div>
+    <div class="switch-wrapper">
+        <input type = "checkbox" id = "toggle" class = "switch-input" /> <label for = "toggle" class = "switch-label">
+            <span class="switch-thumb"> <span class = "text-login">Войти</span> <span class = "text-register">Регистрация</span>
+            </span>
+        </label>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggle = document.getElementById('toggle');
+            const switchThumb = document.querySelector('.switch-thumb');
+            const toggleBtn = document.querySelector('.toggle-password');
+            const passwordInput = document.getElementById('password');
+            const label = document.querySelector('.floating-label');
+            const originalLabelText = label.firstChild.textContent;
+            
+            toggle.addEventListener('change', () => {
+                if (toggle.checked) {
+                    switchThumb.textContent = 'Регистрация';
+                } else {
+                    switchThumb.textContent = 'Войти';
+                }
+            });
+            switchThumb.addEventListener('click', (event) => {
+                event.stopPropagation();
+                event.preventDefault();
+            });
+
+
+            toggleBtn.addEventListener('click', () => {
+                const isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+                toggleBtn.classList.toggle('active', isPassword);
+            });
+
+            let shookOnce = false;
+            
+            passwordInput.addEventListener('input', () => {
+                const length = passwordInput.value.length;
+
+                if (length > 0 && length < 6) {
+                label.textContent = 'Пароль не может быть менее 6 символов';
+                passwordInput.classList.add('error');
+
+                if (!shookOnce) {
+                    passwordInput.classList.remove('error');
+                    void passwordInput.offsetWidth;
+                    passwordInput.classList.add('error');
+                    shookOnce = true;
+                }
+                } else {
+                    label.textContent = originalLabelText;
+                    passwordInput.classList.remove('error');
+                    shookOnce = false;
+                }
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggle = document.getElementById('toggle');
+            const switchThumb = document.querySelector('.switch-thumb');
+                
+            switchThumb.addEventListener('click', function(event) {
+                event.stopPropagation();
+        
+                const username = document.getElementById('name').value;
+                const password = document.getElementById('password').value;
+        
+                const data = {
+                username: username,
+                password: password,
+                mode: toggle.checked ? 'register' : 'login'};
+        
+                fetch('http://localhost:7000/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        alert(result.message || 'Успешно!');
+                    } else {
+                        window.location.href = 'send_error.html';
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    window.location.href = 'server_error.html';
+                });
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const links = document.querySelectorAll('.nav-menu a');
+            const sections = document.querySelectorAll('section');
+            const inputsAndButtons = document.querySelectorAll('.input-wrapper, .password-wrapper, .switch-wrapper');
+             const registerBtn = document.querySelector('.btn-login');
+
+            links.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('href').substring(1); // убрать #
+      
+                    sections.forEach(section => {
+                        if (section.id === targetId) {
+                            section.style.display = 'block';
+                        } else {
+                            section.style.display = 'none';
+                        }
+                    });
+                    if (targetId === 'about-project' || targetId === 'developers') {
+                        inputsAndButtons.forEach(el => el.style.display = 'none');
+                    } else {
+                        inputsAndButtons.forEach(el => el.style.display = '');
+                    }
+                });
+            });
+            registerBtn.addEventListener('click', () => {
+                inputsAndButtons.forEach(el => el.style.display = '');
+                sections.forEach(section => section.style.display = 'none');
+            });
+
+            sections.forEach(section => section.style.display = 'none');
+            inputsAndButtons.forEach(el => el.style.display = '');
+        });
+    </script>
+</body>
+</html>
